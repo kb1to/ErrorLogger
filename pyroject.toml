@@ -11,6 +11,3 @@ dependencies = [
 
 [tool.vercel]
 entrypoint = "errorlogger.wsgi:application"
-
-[tool.vercel.scripts]
-build = "python manage.py collectstatic --noinput && python manage.py migrate"
