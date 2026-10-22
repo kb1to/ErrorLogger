@@ -54,10 +54,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'errorlogger.wsgi.application'
 
-db_url = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
-if db_url:
+DATABASE_URL = (
+    os.environ.get('DATABASE_URL')
+    or os.environ.get('POSTGRES_URL')
+    or os.environ.get('DATABASE_URL_POSTGRES_URL_NON_POOLING')
+    or os.environ.get('DATABASE_URL_POSTGRES_URL')
+)
+
+if DATABASE_URL:
     DATABASES = {
-        'default': dj_database_url.config(default=db_url, conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
 else:
     DATABASES = {
