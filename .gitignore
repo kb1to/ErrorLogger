@@ -1,6 +1,3 @@
-# =========================
-# Python
-# =========================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -24,19 +21,14 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# =========================
-# Django
-# =========================
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 /media/
 /staticfiles/
+/staticfiles_build/
 
-# =========================
-# Environments
-# =========================
 .env
 .venv
 env/
@@ -45,28 +37,19 @@ ENV/
 env.bak/
 venv.bak/
 
-# =========================
-# Node / Tailwind CSS
-# =========================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json # (Optional: remove this if you want to track your exact package versions)
+package-lock.json
 yarn.lock
 
-# =========================
-# IDEs and Editors
-# =========================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# =========================
-# OS generated files
-# =========================
 .DS_Store
 .DS_Store?
 ._*

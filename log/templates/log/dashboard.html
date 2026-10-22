@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsidian Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'obsidian-bg': '#121212',
+                        'obsidian-surface': '#1e1e1e',
+                        'obsidian-border': '#333333',
+                        'obsidian-text': '#e0e0e0',
+                        'obsidian-muted': '#888888',
+                        'accent': '#8b5cf6',
+                        'accent-hover': '#7c3aed'
+                    },
+                    fontFamily: {
+                        'sans': ['"Inter"', 'sans-serif'],
+                        'mono': ['"JetBrains Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-obsidian-bg text-obsidian-text font-sans min-h-screen overflow-x-hidden">
+
+    <nav class="bg-obsidian-surface border-b border-obsidian-border px-8 py-4 flex justify-between items-center sticky top-0 z-50 backdrop-blur-md bg-opacity-90">
+        <div class="flex items-center gap-3">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <h1 class="text-xl font-bold tracking-tight">DevLog</h1>
+        </div>
+        
+        <form method="GET" action="{% url 'dashboard' %}" class="flex-1 max-w-xl mx-8 relative">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-obsidian-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" name="q" value="{{ query }}" placeholder="Search logs, ideas, posts..." class="w-full bg-obsidian-bg border border-obsidian-border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-accent transition-colors">
+        </form>
+
+        <div class="flex items-center gap-4">
+            <span class="text-obsidian-muted text-sm">{{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="text-sm text-obsidian-muted hover:text-white transition-colors">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="bg-obsidian-surface border-b border-obsidian-border px-8 py-3 flex gap-8 text-sm text-obsidian-muted">
+        <div>Errors Logged: <span class="text-white font-medium">{{ stats.total_logs }}</span></div>
+        <div>Total Ideas: <span class="text-white font-medium">{{ stats.total_ideas }}</span></div>
+        <div>Ideas Acted On: <span class="text-green-400 font-medium">{{ stats.ideas_acted_on }}</span></div>
+    </div>
+
+    <main class="max-w-5xl mx-auto mt-8 px-4 pb-12">
+        
+        <div class="flex justify-between items-end mb-6 border-b border-obsidian-border pb-4">
+            <div class="flex gap-6 text-sm font-medium">
+                <button id="btn-logs" class="text-accent border-b-2 border-accent pb-4 -mb-[17px] transition-colors" onclick="showTab('logs')">Logs</button>
+                <button id="btn-ideas" class="text-obsidian-muted hover:text-white pb-4 transition-colors" onclick="showTab('ideas')">Ideas</button>
+                <button id="btn-posts" class="text-obsidian-muted hover:text-white pb-4 transition-colors" onclick="showTab('posts')">Posts</button>
+            </div>
+            
+            <a id="new-btn" href="{% url 'create_log' %}" class="bg-accent hover:bg-accent-hover text-white text-sm font-medium py-2 px-4 rounded-md transition-colors shadow-lg shadow-accent/20">
+                + New Log
+            </a>
+        </div>
+
+        <div id="tab-logs" class="tab-content block space-y-4">
+            {% for log in logs %}
+            <div class="bg-obsidian-surface border border-obsidian-border rounded-xl p-5 hover:border-gray-500 transition-colors group">
+                <div class="flex justify-between items-start mb-3">
+                    <h2 class="text-lg font-semibold text-white">{{ log.problem_name }}</h2>
+                    <div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a href="{% url 'edit_log' log.pk %}" class="text-xs text-obsidian-muted hover:text-accent">Edit</a>
+                        <a href="{% url 'delete_log' log.pk %}" onclick="return confirm('Delete this log?')" class="text-xs text-obsidian-muted hover:text-red-400">Delete</a>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 space-y-3 text-sm text-gray-300">
+                        <div>
+                            <span class="text-xs font-mono text-obsidian-muted block mb-1">WHAT I DIDN'T KNOW</span>
+                            <p class="bg-obsidian-bg p-3 rounded-md border border-obsidian-border">{{ log.what_i_didnt_know }}</p>
+                        </div>
+                        <div>
+                            <span class="text-xs font-mono text-obsidian-muted block mb-1">SOLUTION</span>
+                            <p class="bg-obsidian-bg p-3 rounded-md border border-obsidian-border font-mono text-xs">{{ log.solution }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-accent/10 border border-accent/20 p-4 rounded-lg flex flex-col justify-center">
+                        <span class="text-xs font-mono text-accent block mb-2 text-center uppercase tracking-wider">Takeaway</span>
+                        <p class="text-sm text-center text-gray-200">{{ log.takeaway }}</p>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs font-mono text-obsidian-muted">{{ log.date|date:"M d, Y" }}</div>
+            </div>
+            {% empty %}
+            <div class="text-center text-obsidian-muted mt-12 py-12 border border-dashed border-obsidian-border rounded-xl">No logs found. {% if query %}Try a different search.{% endif %}</div>
+            {% endfor %}
+        </div>
+
+        <div id="tab-ideas" class="tab-content hidden space-y-4">
+            {% for idea in ideas %}
+            <div class="bg-obsidian-surface border border-obsidian-border rounded-xl p-5 hover:border-gray-500 transition-colors group">
+                <div class="flex justify-between items-start mb-3">
+                    <h2 class="text-lg font-semibold text-white">{{ idea.title }}</h2>
+                    <div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a href="{% url 'edit_idea' idea.pk %}" class="text-xs text-obsidian-muted hover:text-accent">Edit</a>
+                        <a href="{% url 'delete_idea' idea.pk %}" onclick="return confirm('Delete this idea?')" class="text-xs text-obsidian-muted hover:text-red-400">Delete</a>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-300 mb-4">{{ idea.text }}</p>
+                <div class="flex gap-3 text-xs font-mono">
+                    <span class="px-2 py-1 rounded bg-obsidian-bg border border-obsidian-border {% if idea.acted_on_it %}text-green-400 border-green-900{% endif %}">
+                        Acted On: {{ idea.acted_on_it|yesno:"Yes,No" }}
+                    </span>
+                    <span class="px-2 py-1 rounded bg-obsidian-bg border border-obsidian-border {% if idea.is_it_bs %}text-red-400 border-red-900{% endif %}">
+                        BS: {{ idea.is_it_bs|yesno:"Yes,No" }}
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center text-obsidian-muted mt-12 py-12 border border-dashed border-obsidian-border rounded-xl">No ideas found. {% if query %}Try a different search.{% endif %}</div>
+            {% endfor %}
+        </div>
+
+        <div id="tab-posts" class="tab-content hidden space-y-4">
+            {% for post in posts %}
+            <div class="bg-obsidian-surface border border-obsidian-border rounded-xl p-5 hover:border-gray-500 transition-colors group">
+                <div class="flex justify-between items-start mb-3">
+                    <h2 class="text-lg font-semibold text-white">{{ post.title }}</h2>
+                    <div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a href="{% url 'edit_post' post.pk %}" class="text-xs text-obsidian-muted hover:text-accent">Edit</a>
+                        <a href="{% url 'delete_post' post.pk %}" onclick="return confirm('Delete this post?')" class="text-xs text-obsidian-muted hover:text-red-400">Delete</a>
+                    </div>
+                </div>
+                <p class="font-mono text-xs text-gray-300 whitespace-pre-wrap bg-obsidian-bg p-4 rounded-md border border-obsidian-border">{{ post.text }}</p>
+                <div class="mt-4 text-xs font-mono text-obsidian-muted">{{ post.date|date:"M d, Y" }}</div>
+            </div>
+            {% empty %}
+            <div class="text-center text-obsidian-muted mt-12 py-12 border border-dashed border-obsidian-border rounded-xl">No posts found. {% if query %}Try a different search.{% endif %}</div>
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            
+            ['logs', 'ideas', 'posts'].forEach(name => {
+                const btn = document.getElementById('btn-' + name);
+                btn.className = "text-obsidian-muted hover:text-white pb-4 transition-colors";
+            });
+
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('block');
+
+            const activeBtn = document.getElementById('btn-' + tabName);
+            activeBtn.className = "text-accent border-b-2 border-accent pb-4 -mb-[17px] transition-colors";
+
+            const newBtn = document.getElementById('new-btn');
+            if (tabName === 'logs') {
+                newBtn.href = "{% url 'create_log' %}";
+                newBtn.innerText = "+ New Log";
+            } else if (tabName === 'ideas') {
+                newBtn.href = "{% url 'create_idea' %}";
+                newBtn.innerText = "+ New Idea";
+            } else if (tabName === 'posts') {
+                newBtn.href = "{% url 'create_post' %}";
+                newBtn.innerText = "+ New Post";
+            }
+        }
+    </script>
+
+</body>
+</html>

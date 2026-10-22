@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        .neon-text { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff66c4, 0 0 40px #ff66c4; }
+        .neon-border { box-shadow: 0 0 15px rgba(255, 102, 196, 0.5); }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center font-['Russo_One']">
+    
+    <div class="bg-[#c2c2c2] border-4 border-[#ff66c4] neon-border p-10 rounded-3xl w-96 text-center">
+        <h1 class="text-4xl text-[#ff66c4] neon-text mb-8 tracking-widest">LOGIN</h1>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="text-left">
+                <label class="block text-black mb-2">Username</label>
+                <input type="text" name="username" class="w-full p-2 rounded border-2 border-black focus:outline-none focus:border-[#ff66c4]" required>
+            </div>
+            
+            <div class="text-left">
+                <label class="block text-black mb-2">Password</label>
+                <input type="password" name="password" class="w-full p-2 rounded border-2 border-black focus:outline-none focus:border-[#ff66c4]" required>
+            </div>
+
+            {% if form.errors %}
+            <div class="text-red-600 text-sm text-left">
+                Invalid username or password. Please try again.
+            </div>
+            {% endif %}
+
+            <button type="submit" class="w-full bg-[#1a0b2e] text-[#ff66c4] py-3 rounded-lg text-xl hover:bg-black transition-colors border-2 border-[#ff66c4]">
+                ENTER
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>
+

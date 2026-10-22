@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'obsidian-bg': '#121212',
+                        'obsidian-surface': '#1e1e1e',
+                        'obsidian-border': '#333333',
+                        'obsidian-text': '#e0e0e0',
+                        'obsidian-muted': '#888888',
+                        'accent': '#8b5cf6',
+                        'accent-hover': '#7c3aed'
+                    },
+                    fontFamily: { 'sans': ['"Inter"', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        form p { margin-bottom: 1.5rem; display: flex; flex-direction: column; }
+        form label { font-size: 0.875rem; font-weight: 500; color: #888888; margin-bottom: 0.5rem; }
+        form input[type="text"], form textarea, form select {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+        form input[type="text"]:focus, form textarea:focus, form select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+        form input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: #8b5cf6;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-obsidian-bg min-h-screen text-obsidian-text font-sans p-8 flex items-center justify-center">
+
+    <div class="max-w-2xl w-full bg-obsidian-surface border border-obsidian-border p-8 rounded-xl shadow-2xl">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-white">{{ title }}</h1>
+            <a href="{% url cancel_url %}" class="text-sm text-obsidian-muted hover:text-white transition-colors">Cancel</a>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="text-sm">
+                {{ form.as_p }}
+            </div>
+            
+            <div class="mt-8 flex justify-end gap-4">
+                <button type="submit" class="bg-accent hover:bg-accent-hover text-white font-medium py-2 px-6 rounded-md transition-colors shadow-lg shadow-accent/20">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
